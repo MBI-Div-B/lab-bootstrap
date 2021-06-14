@@ -1,5 +1,26 @@
 #!/bin/bash
 
+showhelp()
+{
+  printf "Usage: $(basename $0) [-m]\n \
+clones all pytango repositories of MBI-Div-B github account to current folder.
+\t-m\tmirror repository\n "\
+>&2
+}
+
+
+MIRROR=""
+
+if [ "$1" = "-h" ]; then
+  showhelp;
+  exit 2
+fi
+
+if [ "$1" = "-m" ]; then
+  MIRROR=1;
+  shift 1;
+fi
+
 # Modified version of https://gist.github.com/caniszczyk/3856584#gistcomment-3157288
 
 CLONE_REPO="pytango"
@@ -42,8 +63,13 @@ for ((PAGE=1; ; PAGE+=1)); do
       else
         #git clone "$REPO_URL" >/dev/null 2>&1 ||   # Pipe stdout and stderr to /dev/null
         #git clone --depth 1 "$REPO_URL" ||         # Shallow clone for faster cloning, within the repo use the following to get the full git history: git pull --unshallow
-        git clone "$REPO_URL" ||                    # Vanilla
-          { echo "ERROR: Unable to clone $REPO_URL!" ; continue ; }
+        if $MIRROR; then
+            git clone --mirror "$REPO_URL" ||                    # Vanilla
+              { echo "ERROR: Unable to clone $REPO_URL!" ; continue ; }
+        else
+            git clone "$REPO_URL" ||                    # Vanilla
+              { echo "ERROR: Unable to clone $REPO_URL!" ; continue ; }
+        fi
       fi
       CLONED_REPO_COUNT=$((CLONED_REPO_COUNT+1))
     else
