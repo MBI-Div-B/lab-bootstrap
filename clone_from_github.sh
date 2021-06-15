@@ -9,7 +9,7 @@ clones all pytango repositories of MBI-Div-B github account to current folder.
 }
 
 
-MIRROR=""
+MIRROR=false
 
 if [ "$1" = "-h" ]; then
   showhelp;
@@ -17,7 +17,7 @@ if [ "$1" = "-h" ]; then
 fi
 
 if [ "$1" = "-m" ]; then
-  MIRROR=1;
+  MIRROR=true;
   shift 1;
 fi
 
@@ -37,6 +37,8 @@ PER_PAGE=100
 
 TEST_RUN=false
 
+mkdir bin
+
 for ((PAGE=1; ; PAGE+=1)); do
   # Page 0 and 1 are the same
   # Change authorization method as needed
@@ -44,7 +46,7 @@ for ((PAGE=1; ; PAGE+=1)); do
   INPUT=$(curl -s "https://api.github.com/orgs/$ORG/repos?per_page=$PER_PAGE&page=$PAGE" | jq -r ".[].clone_url")
   if [[ -z "$INPUT" ]]; then
     echo "All repos processed, cloned $CLONED_REPO_COUNT repo(s), ignored $IGNORED_REPO_COUNT repo(s) and stopped at page=$PAGE"
-        
+
     # Now link all stuff to bin
     for dsfolder in $(find . -mindepth 1 -maxdepth 1 -type d \( -name "pytango*" \) ) ; 
                                         # you can add pattern insted of * , here it goes to any folder 
@@ -64,10 +66,10 @@ for ((PAGE=1; ; PAGE+=1)); do
         #git clone "$REPO_URL" >/dev/null 2>&1 ||   # Pipe stdout and stderr to /dev/null
         #git clone --depth 1 "$REPO_URL" ||         # Shallow clone for faster cloning, within the repo use the following to get the full git history: git pull --unshallow
         if $MIRROR; then
-            git clone --mirror "$REPO_URL" ||                    # Vanilla
+            git clone --mirror $REPO_URL ||                    # Vanilla
               { echo "ERROR: Unable to clone $REPO_URL!" ; continue ; }
         else
-            git clone "$REPO_URL" ||                    # Vanilla
+            git clone $REPO_URL ||                    # Vanilla
               { echo "ERROR: Unable to clone $REPO_URL!" ; continue ; }
         fi
       fi
