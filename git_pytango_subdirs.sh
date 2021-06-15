@@ -4,6 +4,6 @@ for folder_to_go in $(find . -mindepth 1 -maxdepth 1 -type d \( -name "pytango*"
 do
 cd $folder_to_go
   echo $folder_to_go "########################################## "
-  git pull
-cd ../ 
+  git $1
+cd ../
 done
