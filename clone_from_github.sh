@@ -37,7 +37,6 @@ PER_PAGE=100
 
 TEST_RUN=false
 
-mkdir bin
 
 for ((PAGE=1; ; PAGE+=1)); do
   # Page 0 and 1 are the same
@@ -46,15 +45,17 @@ for ((PAGE=1; ; PAGE+=1)); do
   INPUT=$(curl -s "https://api.github.com/orgs/$ORG/repos?per_page=$PER_PAGE&page=$PAGE" | jq -r ".[].clone_url")
   if [[ -z "$INPUT" ]]; then
     echo "All repos processed, cloned $CLONED_REPO_COUNT repo(s), ignored $IGNORED_REPO_COUNT repo(s) and stopped at page=$PAGE"
-
-    # Now link all stuff to bin
-    for dsfolder in $(find . -mindepth 1 -maxdepth 1 -type d \( -name "pytango*" \) ) ; 
+    if ! $MIRROR; then
+      mkdir bin
+      # Now link all stuff to bin
+      for dsfolder in $(find . -mindepth 1 -maxdepth 1 -type d \( -name "pytango*" \) ) ; 
                                         # you can add pattern insted of * , here it goes to any folder 
                                         #-mindepth / maxdepth 1 means one folder depth   
-    do
-    ds=${dsfolder#"./pytango-"}
-    ln -s ../${dsfolder}/${ds}".py" bin/$ds
-    done
+      do
+      ds=${dsfolder#"./pytango-"}
+      ln -s "../"${dsfolder}/${ds}".py" bin/$ds
+      done
+    fi
 
     exit
   fi
