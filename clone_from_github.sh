@@ -53,7 +53,7 @@ for ((PAGE=1; ; PAGE+=1)); do
                                         #-mindepth / maxdepth 1 means one folder depth   
       do
       ds=${dsfolder#"./pytango-"}
-      ln -s "../"${dsfolder}/${ds}".py" bin/$ds
+      ln -s "../"${dsfolder#"./"}/${ds}".py" bin/$ds
       done
     fi
 
