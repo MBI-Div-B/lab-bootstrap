@@ -57,6 +57,19 @@ for ((PAGE=1; ; PAGE+=1)); do
       done
     fi
 
+    if $MIRROR; then
+      for dsfolder in $(find . -mindepth 1 -maxdepth 1 -type d \( -name "pytango*" \) ) ;
+      do
+      cd $dsfolder
+      rm packed-refs
+      git config --unset-all remote.origin.fetch
+      git config --add remote.origin.fetch +refs/heads/*:refs/heads/*
+      git config --add remote.origin.fetch +refs/tags/*:refs/tags/*
+      git remote update
+      cd ../
+      done
+    fi
+
     exit
   fi
   while read REPO_URL ; do
